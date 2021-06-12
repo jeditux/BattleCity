@@ -2,8 +2,7 @@
 // Created by jeditux on 6/4/21.
 //
 
-#ifndef BATTLECITY_SHADERPROGRAM_H
-#define BATTLECITY_SHADERPROGRAM_H
+#pragma once
 
 #include <string>
 #include <glad/glad.h>
@@ -29,4 +28,3 @@ namespace Renderer {
 }
 
 
-#endif //BATTLECITY_SHADERPROGRAM_H

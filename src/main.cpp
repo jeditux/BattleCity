@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "Renderer/ShaderProgram.h"
+#include "Resources/ResourceManager.h"
 
 int windowWidth = 640;
 int windowHeight =480;
@@ -18,24 +19,6 @@ GLfloat colors[] = {
         0.0f, 0.0f, 1.0f
 };
 
-const char* cVertexShader =
-        "#version 460\n"
-        "layout(location = 0) in vec3 vertex_position;\n"
-        "layout(location = 1) in vec3 vertex_color;\n"
-        "out vec3 color;\n"
-        "void main() {\n"
-        "    color = vertex_color;\n"
-        "    gl_Position = vec4(vertex_position, 1.0);\n"
-        "}\n";
-
-const char* cFragmentShader =
-        "#version 460\n"
-        "in vec3 color;\n"
-        "out vec4 frag_color;\n"
-        "void main() {\n"
-        "    frag_color = vec4(color, 1.0);\n"
-        "}\n";
-
 void glfwWindowSizeCallback(GLFWwindow* pWindow, int width, int height) {
     windowWidth = width;
     windowHeight = height;
@@ -48,7 +31,7 @@ void glfwKeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int
     }
 }
 
-int main()
+int main(int argc, char** argv)
 {
     /* Initialize the library */
     if (!glfwInit()) {
@@ -85,10 +68,9 @@ int main()
 
     glClearColor(1, 1, 0, 1);
     {
-        std::string vertexShader(cVertexShader);
-        std::string fragmentShader(cFragmentShader);
-        Renderer::ShaderProgram shaderProgram(vertexShader, fragmentShader);
-        if (!shaderProgram.isCompiled()) {
+        ResourceManager resourceManager(argv[0]);
+        auto shaderProgram = resourceManager.loadShader("TestTriangle", "triangle.vert", "triangle.frag");
+        if (!shaderProgram) {
             std::cerr << "Can't create shader program!" << std::endl;
             return -1;
         }
@@ -120,7 +102,7 @@ int main()
             /* Render here */
             glClear(GL_COLOR_BUFFER_BIT);
 
-            shaderProgram.use();
+            shaderProgram->use();
             glBindVertexArray(vao);
             glDrawArrays(GL_TRIANGLES, 0, 3);
 
