@@ -1,12 +1,12 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/vec2.hpp>
 #include <iostream>
 #include "Renderer/ShaderProgram.h"
 #include "Renderer/Texture2D.h"
 #include "Resources/ResourceManager.h"
 
-int windowWidth = 640;
-int windowHeight =480;
+glm::ivec2 windowSize(640, 480);
 
 GLfloat vertices[] = {
         0.0f, 0.5f, 0.0f,
@@ -27,9 +27,9 @@ GLfloat texCoords[] = {
 };
 
 void glfwWindowSizeCallback(GLFWwindow* pWindow, int width, int height) {
-    windowWidth = width;
-    windowHeight = height;
-    glViewport(0, 0, windowWidth, windowHeight);
+    windowSize.x = width;
+    windowSize.y = height;
+    glViewport(0, 0, windowSize.x, windowSize.y);
 }
 
 void glfwKeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mode) {
@@ -51,7 +51,7 @@ int main(int argc, char** argv)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     /* Create a windowed mode window and its OpenGL context */
-    GLFWwindow* pWindow = glfwCreateWindow(windowWidth, windowHeight, "Battle City", nullptr, nullptr);
+    GLFWwindow* pWindow = glfwCreateWindow(windowSize.x, windowSize.y, "Battle City", nullptr, nullptr);
     if (!pWindow)
     {
         std::cout << "glfwCreateWindow failed!" << std::endl;
