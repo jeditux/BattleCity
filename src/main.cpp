@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "Renderer/ShaderProgram.h"
+#include "Renderer/Texture2D.h"
 #include "Resources/ResourceManager.h"
 
 int windowWidth = 640;
@@ -17,6 +18,12 @@ GLfloat colors[] = {
         1.0f, 0.0f, 0.0f,
         0.0f, 1.0f, 0.0f,
         0.0f, 0.0f, 1.0f
+};
+
+GLfloat texCoords[] = {
+        0.5f, 1.0f,
+        1.0f, 0.0f,
+        0.0f, 0.0f
 };
 
 void glfwWindowSizeCallback(GLFWwindow* pWindow, int width, int height) {
@@ -75,6 +82,8 @@ int main(int argc, char** argv)
             return -1;
         }
 
+        auto tex = resourceManager.loadTexture("DefaultTexture", "map_16x16.png");
+
         GLuint pointsVBO;
         glGenBuffers(1, &pointsVBO);
         glBindBuffer(GL_ARRAY_BUFFER, pointsVBO);
@@ -84,6 +93,11 @@ int main(int argc, char** argv)
         glGenBuffers(1, &colorsVBO);
         glBindBuffer(GL_ARRAY_BUFFER, colorsVBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
+
+        GLuint texCoordsVBO;
+        glGenBuffers(1, &texCoordsVBO);
+        glBindBuffer(GL_ARRAY_BUFFER, texCoordsVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(texCoords), texCoords, GL_STATIC_DRAW);
 
         GLuint vao = 0;
         glGenVertexArrays(1, &vao);
@@ -97,6 +111,13 @@ int main(int argc, char** argv)
         glBindBuffer(GL_ARRAY_BUFFER, colorsVBO);
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
+        glEnableVertexAttribArray(2);
+        glBindBuffer(GL_ARRAY_BUFFER, texCoordsVBO);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+
+        shaderProgram->use();
+        shaderProgram->setInt("tex", 0);
+
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(pWindow)) {
             /* Render here */
@@ -104,6 +125,7 @@ int main(int argc, char** argv)
 
             shaderProgram->use();
             glBindVertexArray(vao);
+            tex->bind();
             glDrawArrays(GL_TRIANGLES, 0, 3);
 
             /* Swap front and back buffers */

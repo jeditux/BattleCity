@@ -9,7 +9,7 @@ namespace Renderer {
                          GLenum filter, const GLenum wrapMode) : m_width(width), m_height(height) {
         switch (nChannels) {
             case 4:
-                m_mode = GL_RGB;
+                m_mode = GL_RGBA;
                 break;
             case 3:
                 m_mode = GL_RGB;
@@ -19,6 +19,7 @@ namespace Renderer {
                 break;
         }
         glGenTextures(1, &m_Id);
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, m_Id);
         glTexImage2D(GL_TEXTURE_2D, 0, m_mode, m_width, m_height, 0, m_mode, GL_UNSIGNED_BYTE, data);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
