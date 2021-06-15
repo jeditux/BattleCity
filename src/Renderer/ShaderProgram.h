@@ -6,6 +6,7 @@
 
 #include <string>
 #include <glad/glad.h>
+#include <glm/mat4x4.hpp>
 
 namespace Renderer {
     class ShaderProgram {
@@ -15,6 +16,7 @@ namespace Renderer {
         bool isCompiled() const { return m_isCompiled; }
         void use() const;
         void setInt(const std::string& name, const GLint value);
+        void setMatrix4(const std::string& name, const glm::mat4& matrix);
 
         ShaderProgram(ShaderProgram&) = delete;
         ShaderProgram& operator=(const ShaderProgram&) = delete;
