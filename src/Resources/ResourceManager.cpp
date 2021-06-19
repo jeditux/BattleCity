@@ -8,6 +8,7 @@
 #include "ResourceManager.h"
 #include "../Renderer/ShaderProgram.h"
 #include "../Renderer/Texture2D.h"
+#include "../Renderer/Sprite.h"
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_ONLY_PNG
 #include "stb_image.h"
@@ -67,6 +68,36 @@ std::shared_ptr<Renderer::Texture2D> ResourceManager::getTexture(const std::stri
         return nullptr;
     }
     return m_textures.at(textureName);
+}
+
+std::shared_ptr<Renderer::Sprite> ResourceManager::loadSprite(const std::string &spriteName,
+                                                              const std::string &textureName,
+                                                              const std::string &shaderName,
+                                                              const unsigned int spriteWidth,
+                                                              const unsigned int spriteHeight) {
+    auto pTexture = getTexture(textureName);
+    if (!pTexture) {
+        std::cerr << "Can't find texture: " << textureName << " for sprite " << spriteName << std::endl;
+        return nullptr;
+    }
+    auto pShader = getShader(shaderName);
+    if (!pShader) {
+        std::cerr << "Can't find shader: " << shaderName << " for sprite " << spriteName << std::endl;
+        return nullptr;
+    }
+    auto [it, is_new] = m_sprites.try_emplace(textureName, std::make_shared<Renderer::Sprite>(pTexture, pShader
+                                                                                              , glm::vec2(0.f, 0.f)
+                                                                                              , glm::vec2(spriteWidth, spriteHeight)
+                                                                                              , 0.f));
+    return it->second;
+}
+
+std::shared_ptr<Renderer::Sprite> ResourceManager::getSprite(const std::string &spriteName) const {
+    if (m_sprites.count(spriteName) == 0) {
+        std::cerr << "Can't find sprite: " << spriteName << std::endl;
+        return nullptr;
+    }
+    return m_sprites.at(spriteName);
 }
 
 std::string ResourceManager::getFileData(const std::string &fileName) const {

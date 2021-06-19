@@ -6,6 +6,7 @@
 #include <iostream>
 #include "Renderer/ShaderProgram.h"
 #include "Renderer/Texture2D.h"
+#include "Renderer/Sprite.h"
 #include "Resources/ResourceManager.h"
 
 glm::ivec2 windowSize(640, 480);
@@ -84,7 +85,16 @@ int main(int argc, char** argv)
             return -1;
         }
 
+        auto spriteShaderProgram = resourceManager.loadShader("SpriteShader", "sprite.vert", "sprite.frag");
+        if (!spriteShaderProgram) {
+            std::cerr << "Can't create sprite shader program!" << std::endl;
+            return -1;
+        }
+
         auto tex = resourceManager.loadTexture("DefaultTexture", "map_16x16.png");
+
+        auto pSprite = resourceManager.loadSprite("testSprite", "DefaultTexture", "SpriteShader", 50, 100);
+        pSprite->setPosition(glm::vec2(300, 100));
 
         GLuint pointsVBO;
         glGenBuffers(1, &pointsVBO);
@@ -130,6 +140,10 @@ int main(int argc, char** argv)
 
         shaderProgram->setMatrix4("projectionMatrix", projectionMatrix);
 
+        spriteShaderProgram->use();
+        spriteShaderProgram->setInt("tex", 0);
+        spriteShaderProgram->setMatrix4("projectionMatrix", projectionMatrix);
+
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(pWindow)) {
             /* Render here */
@@ -144,6 +158,8 @@ int main(int argc, char** argv)
 
             shaderProgram->setMatrix4("modelMatrix", modelMatrix2);
             glDrawArrays(GL_TRIANGLES, 0, 3);
+
+            pSprite->draw();
 
             /* Swap front and back buffers */
             glfwSwapBuffers(pWindow);
