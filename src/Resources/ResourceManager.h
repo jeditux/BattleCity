@@ -34,8 +34,15 @@ public:
                                                 const std::string& textureName,
                                                 const std::string& shaderName,
                                                 const unsigned int spriteWidth,
-                                                const unsigned int spriteHeight);
+                                                const unsigned int spriteHeight,
+                                                 const std::string& subTextureName = "default");
     std::shared_ptr<Renderer::Sprite> getSprite(const std::string& spriteName) const;
+
+    std::shared_ptr<Renderer::Texture2D> loadTextureAtlas(std::string textureName,
+                                                          std::string texturePath,
+                                                          const std::vector<std::string>& subTextures,
+                                                          const unsigned int subTextureWidth,
+                                                          const unsigned int subTextureHeight);
 
 private:
     const std::string RESOURCES_PATH = "res/";

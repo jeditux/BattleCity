@@ -9,7 +9,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace Renderer {
-    Sprite::Sprite(const std::shared_ptr<Texture2D> pTexture, const std::shared_ptr<ShaderProgram> pShaderProgram,
+    Sprite::Sprite(const std::shared_ptr<Texture2D> pTexture, const std::string& initialSubTexture,
+                   const std::shared_ptr<ShaderProgram> pShaderProgram,
                    const glm::vec2 &position, const glm::vec2 &size, const float rotation)
                    : m_pTexture(std::move(pTexture))
                    , m_pShaderProgram(std::move(pShaderProgram))
@@ -17,6 +18,10 @@ namespace Renderer {
                    , m_size(size)
                    , m_rotation(rotation) {
         const GLfloat vertexCoords[] = {
+                // 2--3    1
+                // | /   / |
+                // 1    3--2
+
                 // X  Y
                 0.f, 0.f,
                 0.f, 1.f,
@@ -26,14 +31,16 @@ namespace Renderer {
                 0.f, 0.f
         };
 
+        auto subTexture = pTexture->getSubTexture(initialSubTexture);
+
         const GLfloat textureCoords[] = {
                 // U  V
-                0.f, 0.f,
-                0.f, 1.f,
-                1.f, 1.f,
-                1.f, 1.f,
-                1.f, 0.f,
-                0.f, 0.f
+                subTexture.leftBottomUV.x, subTexture.leftBottomUV.y,
+                subTexture.leftBottomUV.x, subTexture.rightTopUV.y,
+                subTexture.rightTopUV.x, subTexture.rightTopUV.y,
+                subTexture.rightTopUV.x, subTexture.rightTopUV.y,
+                subTexture.rightTopUV.x, subTexture.leftBottomUV.y,
+                subTexture.leftBottomUV.x, subTexture.leftBottomUV.y
         };
         glGenVertexArrays(1, &m_VAO);
         glBindVertexArray(m_VAO);
